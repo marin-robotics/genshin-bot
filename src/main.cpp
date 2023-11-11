@@ -156,8 +156,8 @@ pros::delay(400);
   pros::delay(600);
   left_motors.move_velocity(200);
   right_motors.move_velocity(200);
-  left_motors.set_voltage_limit(5000);
-  right_motors.set_voltage_limit(5000);
+  left_motors.set_voltage_limit(4600);
+  right_motors.set_voltage_limit(4600);
   pros::delay(800);
   
     left_motors.move_velocity(0);
@@ -177,7 +177,7 @@ pros::delay(400);
   }*/
    
 
-  pros::delay(300);
+  pros::delay(500);
   pros::screen::print(pros::E_TEXT_MEDIUM, 1,
                               "four");
 //  action.give();
@@ -190,7 +190,7 @@ pros::delay(400);
   //action.take(1500);
   snarf_rotator_1.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 	snarf_rotator_2.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-  snarf_rotator.move_absolute(-180, 200);
+  snarf_rotator.move_absolute(-175, 200);
   pros::delay(400);
   snarf_driver.move_velocity(600);
   pros::delay(1000);
@@ -211,8 +211,8 @@ pros::delay(400);
    pros::delay(800);
   turn(-40, 600);
  pros::delay(300);
-     left_motors.set_voltage_limit(8000);
-  right_motors.set_voltage_limit(8000);
+     left_motors.set_voltage_limit(5000);
+  right_motors.set_voltage_limit(5000);
 
   move(36, 250);
   front_left_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
