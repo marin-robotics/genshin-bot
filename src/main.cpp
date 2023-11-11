@@ -378,6 +378,8 @@ if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A) && isextended==tr
 if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)){
    catapult_motor.move_relative(45 , 127);
 }
+if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)){
+   catapult_motor.move_relative(-45 , 127);}
 if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
 			piston.set_value(true);
 		}
