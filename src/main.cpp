@@ -90,7 +90,7 @@ void on_center_button() {
 float move_factor= 360/Wheel_Circumference;
 
 
-float autonselect=1 ;
+float autonselect=-1 ;
 pros::Mutex action;
 void move( float inches, float velocity) { 	//action.take(1000);
 	Forward_Wheel_Rotation = Move_Tuning_Factor*(inches/Wheel_Circumference)*360;
@@ -148,7 +148,7 @@ pros::delay(400);
   pros::screen::print(pros::E_TEXT_MEDIUM, 1, "two");
  
   pros::delay(500);
-  move(13, 600);
+  move(16, 600);
   pros::screen::print(pros::E_TEXT_MEDIUM, 1,
                               "three");
  pros::delay(700);
@@ -194,7 +194,9 @@ pros::delay(400);
   pros::delay(400);
   snarf_driver.move_velocity(600);
   pros::delay(1000);
-  snarf_driver.move_velocity(0);
+   move(-4, 600);
+   pros::delay(500);
+
   pros::delay(400);
   snarf_rotator.move_absolute(0,200);
   snarf_rotator_1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
@@ -202,8 +204,8 @@ pros::delay(400);
   //action.give();
 
 
-
-  move(-4, 600);
+/*
+ 
   pros::delay(400);
   turn(270, 600);
    pros::delay(1200);
@@ -211,15 +213,17 @@ pros::delay(400);
    pros::delay(800);
   turn(-40, 600);
  pros::delay(300);
+  snarf_rotator.move_absolute(-175, 200);
+  snarf_driver.move_velocity(0);
      left_motors.set_voltage_limit(5000);
   right_motors.set_voltage_limit(5000);
 
-  move(36, 250);
+  move(9, 250);
   front_left_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
 	back_left_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
 	front_right_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
   back_right_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
-	catapult_motor.set_brake_modes(MOTOR_BRAKE_HOLD);
+	catapult_motor.set_brake_modes(MOTOR_BRAKE_HOLD); */
      left_motors.set_voltage_limit(12000);
   right_motors.set_voltage_limit(12000);
 
@@ -238,6 +242,8 @@ void opcontrol() {
 	catapult_motor.set_brake_modes(MOTOR_BRAKE_HOLD);
 	snarf_rotator_1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	snarf_rotator_2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+   snarf_rotator.move_absolute(0, 200);
+     snarf_driver.move_velocity(0);
 	//gets the x and y inputs from both controller sticks
         
         while (true) {
@@ -371,7 +377,7 @@ if (drive_plus_turning) { // Option to use the right stick for turning
 
           // catapult code
 
-if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A) && isextended==true) {
+if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
    catapult_motor.move_relative(540, 127);
   }
           pros::delay(20);	
@@ -383,6 +389,8 @@ if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)){
 if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
 			piston.set_value(true);
 		}
-    
+  if (master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
+    snarf_rotator.move_absolute(0, 200);
+  }
 }
 }
