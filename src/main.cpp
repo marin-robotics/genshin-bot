@@ -164,48 +164,23 @@ pros::delay(400);
   right_motors.move_velocity(0);
     left_motors.set_voltage_limit(12000);
   right_motors.set_voltage_limit(12000);
-  /*bool t;
-  while (t==false) {
-  left_motors.move_velocity(200);
-  right_motors.move_velocity(200);
-  
- if (front_left_motor.get_voltage()>6000 && front_right_motor.get_voltage()>6000) {
-    left_motors.move_velocity(0);
-  right_motors.move_velocity(0);
-  t=true;
- }
-  }*/
-   
-
-  pros::delay(500);
-  pros::screen::print(pros::E_TEXT_MEDIUM, 1,
-                              "four");
-//  action.give();
-//  }
-//};
-
- 
- pros::delay(400);
-
-  //action.take(1500);
+  pros::delay(600);
+  pros::screen::print(pros::E_TEXT_MEDIUM, 1, "four");
   snarf_rotator_1.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 	snarf_rotator_2.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   snarf_rotator.move_absolute(-175, 200);
   pros::delay(400);
   snarf_driver.move_velocity(600);
-  pros::delay(1000);
+  pros::delay(500);
    move(-4, 600);
+     pros::delay(500);
    pros::delay(500);
 
   pros::delay(400);
   snarf_rotator.move_absolute(0,200);
   snarf_rotator_1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	snarf_rotator_2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  //action.give();
 
-
-/*
- 
   pros::delay(400);
   turn(270, 600);
    pros::delay(1200);
@@ -223,7 +198,7 @@ pros::delay(400);
 	back_left_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
 	front_right_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
   back_right_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
-	catapult_motor.set_brake_modes(MOTOR_BRAKE_HOLD); */
+	catapult_motor.set_brake_modes(MOTOR_BRAKE_HOLD); 
      left_motors.set_voltage_limit(12000);
   right_motors.set_voltage_limit(12000);
 
@@ -255,39 +230,7 @@ void opcontrol() {
                               "Power values: %f, %f, %f, %f", left_y, left_x,
                               right_y, right_x);
         
-          /*if (left_x >= 5) {
-            left_motors.move_velocity(left_x * modifier * left_y);
-            if (0 <= left_x && left_x <= rt2 * 127) {
-              right_motors.move_velocity(left_x / (rt2 * 127) * modifier *
-                                         left_y);
-            } else if (rt2 * 127 <= left_x && left_x <= 127.0) {
-              right_motors.move_velocity(left_x / (rt2 * 127) * modifier *
-                                         left_y * -1);
-            }
-            pros::delay(20);
-          }
-          if (left_x <= -5) {
-            right_motors.move_velocity(left_x * modifier * left_y);
-            if (-1 * rt2 * 127 <= left_x && left_x <= 0) {
-              left_motors.move_velocity(left_x / (rt2 * 127) * modifier *
-                                        left_y);
-            } else if (-127.0 <= left_x && left_x <= -1 * rt2 * 127) {
-              left_motors.move_velocity(left_x / (rt2 * 127) * modifier *
-                                        left_y * -1);
-            }
-            pros::delay(20);
-          }
-          if (left_y>=5 && std::abs(left_x)<5){
-            left_motors.move_velocity(modifier * left_y);
-            right_motors.move_velocity( modifier * left_y);
-          }
-          if (left_y<=5 && std::abs(left_x)<5) {
-             right_motors.move_velocity( modifier * left_y);
-             left_motors.move_velocity( modifier * left_y);
-          }
-          if (std::abs(left_x)<5 && std::abs(left_y)<5){right_motors.move_velocity(0);
-                left_motors.move_velocity(0);
-          }*/
+        
 if (drive_plus_turning) { // Option to use the right stick for turning
       if (abs(right_x) < abs(left_x)) {
         right_x = left_x;
@@ -345,20 +288,17 @@ if (drive_plus_turning) { // Option to use the right stick for turning
           
           // snarfer code
 
-          if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+  if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
             snarf_driver.move_velocity(600);
-          } 
-          else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+  } 
+  else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
             snarf_driver.move_velocity(-600);
-          }
-          else {
+  }
+  else {
             snarf_driver.move_velocity(0);
-          }
-       
-
+  }
           // forebar code- if not working reverse input and output
-
-          if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) {
+   if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) {
             if (isextended == true) {
               snarf_rotator.move_absolute(0, 127);
               isextended = false;
@@ -374,7 +314,6 @@ if (drive_plus_turning) { // Option to use the right stick for turning
               pros::delay(20);
             }
           }
-
           // catapult code
 
 if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
