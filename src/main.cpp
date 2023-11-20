@@ -89,9 +89,10 @@ void on_center_button() {
 }
 float move_factor= 360/Wheel_Circumference;
 
-
+// side one is defensive, side -1 is offensive
 float autonselect=-1 ;
 pros::Mutex action;
+// inches, rpm, defaults to forward
 void move( float inches, float velocity) { 	//action.take(1000);
 	Forward_Wheel_Rotation = Move_Tuning_Factor*(inches/Wheel_Circumference)*360;
 
@@ -102,6 +103,7 @@ void move( float inches, float velocity) { 	//action.take(1000);
   right_motors.move_relative(Forward_Wheel_Rotation,velocity);
 		//action.give();
 	}
+  // inputs in degrees, rpm, defaults to clockwise
 void turn (float angle, float velocity) {
 	//action.take(1000);
 	 Turning_Distance = angle/360 * Turning_Circumference;
@@ -111,7 +113,25 @@ void turn (float angle, float velocity) {
   right_motors.move_relative(-Turn_Wheel_Rotation*autonselect, velocity);
 
 }
+void timedmove (float inches, float velocity, float milliseconds) {
+ 
+  Forward_Wheel_Rotation = Move_Tuning_Factor*(inches/Wheel_Circumference)*360;
+float distance;
+float time;
+  while (not (Forward_Wheel_Rotation <= distance or time <= milliseconds)) {
+    left_motors.move_velocity(velocity);
+    right_motors.move_velocity(velocity);
 
+
+    pros::delay(10);
+    time= time+10;
+    distance = Move_Tuning_Factor*Wheel_Circumference*velocity*time/60000;
+
+
+  }
+  
+
+}
 //change to negative if on right
 void initialize() {
 	
@@ -136,7 +156,8 @@ pros::delay(400);
   left_motors.move_velocity(-600);
   right_motors.move_velocity(-600);
   pros::delay(500);
-
+ left_motors.move_velocity(0);
+  right_motors.move_velocity(0);
 //pros::Task body1{ 
 //  [=]{
   //  action.take(5000);
