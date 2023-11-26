@@ -52,16 +52,16 @@ pros::Motor front_left_motor(17, pros::E_MOTOR_GEAR_BLUE, true,
 pros::Motor back_left_motor(16, pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_DEGREES);
 pros::Motor front_right_motor(19, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_DEGREES);
 pros::Motor back_right_motor(20, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor catapult_motor_1(1, pros::E_MOTOR_GEAR_RED, false, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor catapult_motor_2(8, pros::E_MOTOR_GEAR_RED, true, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor snarf_rotator_1( 2,pros::E_MOTOR_GEAR_GREEN, false, pros:: E_MOTOR_ENCODER_DEGREES );
-pros::Motor snarf_rotator_2( 6,pros::E_MOTOR_GEAR_GREEN, true, pros:: E_MOTOR_ENCODER_DEGREES );
+pros::Motor catapult_motor_left(1, pros::E_MOTOR_GEAR_RED, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor catapult_motor_right(8, pros::E_MOTOR_GEAR_RED, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor snarf_rotator_right( 2,pros::E_MOTOR_GEAR_GREEN, false, pros:: E_MOTOR_ENCODER_DEGREES );
+pros::Motor snarf_rotator_left( 6,pros::E_MOTOR_GEAR_GREEN, true, pros:: E_MOTOR_ENCODER_DEGREES );
 pros::Motor snarf_driver(4, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_DEGREES);
 //grouping both sides of the drivetrain
 pros::MotorGroup left_motors({front_left_motor, back_left_motor});
 pros::MotorGroup right_motors({front_right_motor, back_right_motor});
-pros::MotorGroup snarf_rotator({snarf_rotator_1, snarf_rotator_2});
-pros::MotorGroup catapult_motor({catapult_motor_1, catapult_motor_2});
+pros::MotorGroup snarf_rotator({snarf_rotator_right, snarf_rotator_left});
+pros::MotorGroup catapult_motor({catapult_motor_left, catapult_motor_right});
 int repeat=0;
 //modifier from 127 to 600
 float modifier = 600.0/127;
@@ -75,7 +75,7 @@ void debug_auton(int step){
   pros::screen::print(pros::E_TEXT_MEDIUM, 3, "Step: %d", step);
 }
 
-float extenddistance = 180;
+float extenddistance = 300;
 bool isextended = false;
 bool snarferon = false;
 void on_center_button() {
@@ -147,8 +147,8 @@ void competition_initialize() {}
 
 void autonomous() {
   catapult_motor.set_brake_modes(MOTOR_BRAKE_HOLD);
-  	snarf_rotator_1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	snarf_rotator_2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  	snarf_rotator_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	snarf_rotator_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 move(-28, 500);
 pros::delay(1500);
 turn(45, 600 );
@@ -187,8 +187,8 @@ pros::delay(400);
   right_motors.set_voltage_limit(12000);
   pros::delay(600);
   pros::screen::print(pros::E_TEXT_MEDIUM, 1, "four");
-  snarf_rotator_1.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-	snarf_rotator_2.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  snarf_rotator_right.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+	snarf_rotator_left.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
   snarf_rotator.move_absolute(-175, 200);
   pros::delay(400);
   snarf_driver.move_velocity(600);
@@ -199,8 +199,8 @@ pros::delay(400);
 
   pros::delay(400);
   snarf_rotator.move_absolute(0,200);
-  snarf_rotator_1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	snarf_rotator_2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  snarf_rotator_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	snarf_rotator_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
   pros::delay(400);
   turn(270, 600);
@@ -209,7 +209,7 @@ pros::delay(400);
    pros::delay(800);
   turn(-40, 600);
  pros::delay(300);
-  snarf_rotator.move_absolute(-175, 200);
+  snarf_rotator.move_absolute(-extenddistance, 200);
   snarf_driver.move_velocity(0);
      left_motors.set_voltage_limit(5000);
   right_motors.set_voltage_limit(5000);
@@ -236,8 +236,8 @@ void opcontrol() {
 	front_right_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
   back_right_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
 	catapult_motor.set_brake_modes(MOTOR_BRAKE_HOLD);
-	snarf_rotator_1.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	snarf_rotator_2.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	snarf_rotator_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	snarf_rotator_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
    snarf_rotator.move_absolute(0, 200);
      snarf_driver.move_velocity(0);
 	//gets the x and y inputs from both controller sticks
@@ -338,7 +338,7 @@ if (drive_plus_turning) { // Option to use the right stick for turning
           // catapult code
 
 if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
-   catapult_motor.move_relative(540, 127);
+   catapult_motor.move_relative(540, 127); //pos was 540
   }
           pros::delay(20);	
 if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)){
