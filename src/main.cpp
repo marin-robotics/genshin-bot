@@ -69,13 +69,13 @@ float modifier = 600.0/127;
 float rt2 = sqrt(2.0);
 //defining the controller
 int auton_step = 0; // debug
-
+int catainit =135;
 void debug_auton(int step){
   pros::screen::print(pros::E_TEXT_LARGE_CENTER, 1, "Running Auton");
   pros::screen::print(pros::E_TEXT_MEDIUM, 3, "Step: %d", step);
 }
 
-float extenddistance = 300;
+float extenddistance = 240;
 bool isextended = false;
 bool snarferon = false;
 void on_center_button() {
@@ -149,6 +149,8 @@ void autonomous() {
   catapult_motor.set_brake_modes(MOTOR_BRAKE_HOLD);
   	snarf_rotator_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	snarf_rotator_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  catapult_motor.move_relative(catainit , 127);
+  pros::delay(400);
 move(-28, 500);
 pros::delay(1500);
 turn(45, 600 );
@@ -349,6 +351,9 @@ if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)){
 if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
 			piston.set_value(true);
 		}
+if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)){
+   catapult_motor.move_relative(catainit , 127);
+}
   if (master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
     snarf_rotator.move_absolute(0, 200);
   }
