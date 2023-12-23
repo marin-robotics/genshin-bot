@@ -176,7 +176,8 @@ pros::delay(400);
   pros::screen::print(pros::E_TEXT_MEDIUM, 1,
                               "three");
  pros::delay(700);
-  turn(120, 600);
+ //tweak this turn as needed at tournament
+  turn(110, 600);
   pros::delay(600);
   left_motors.move_velocity(200);
   right_motors.move_velocity(200);
