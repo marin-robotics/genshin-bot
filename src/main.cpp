@@ -90,7 +90,7 @@ void on_center_button() {
 float move_factor= 360/Wheel_Circumference;
 
 // side one is defensive, side -1 is offensive
-float autonselect=-1 ;
+float autonselect=1 ;
 pros::Mutex action;
 // inches, rpm, defaults to forward
 void move( float inches, float velocity) { 	//action.take(1000);
@@ -152,7 +152,7 @@ void autonomous() {
   catapult_motor.move_relative(catainit , 127);
   pros::delay(400);
 move(-28, 500);
-pros::delay(1500);
+pros::delay(1200);
 turn(45, 600 );
 pros::delay(400);
   left_motors.move_velocity(-600);
@@ -166,22 +166,23 @@ pros::delay(400);
   move(6, 600);
   pros::screen::print(pros::E_TEXT_MEDIUM, 1,
                               "one");
-  pros::delay(500);
+  pros::delay(400);
+  
   turn(-45,600);
   pros::screen::print(pros::E_TEXT_MEDIUM, 1, "two");
  
-  pros::delay(500);
-  move(16, 600);
+  pros::delay(400);
+  move(15, 600);
   pros::screen::print(pros::E_TEXT_MEDIUM, 1,
                               "three");
  pros::delay(700);
-  turn(95, 600);
+  turn(120, 600);
   pros::delay(600);
   left_motors.move_velocity(200);
   right_motors.move_velocity(200);
   left_motors.set_voltage_limit(4600);
   right_motors.set_voltage_limit(4600);
-  pros::delay(800);
+  pros::delay(600);
   
     left_motors.move_velocity(0);
   right_motors.move_velocity(0);
@@ -191,32 +192,39 @@ pros::delay(400);
   pros::screen::print(pros::E_TEXT_MEDIUM, 1, "four");
   snarf_rotator_right.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 	snarf_rotator_left.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-  snarf_rotator.move_absolute(-175, 200);
+  snarf_rotator.move_absolute(-extenddistance, 200);
   pros::delay(400);
   snarf_driver.move_velocity(600);
   pros::delay(500);
    move(-4, 600);
      pros::delay(500);
-   pros::delay(500);
-
-  pros::delay(400);
+   pros::delay(1000);
+  turn(25, 400);
+   pros::delay(400);
+   catapult_motor.move_relative(540, 127);
+  pros::delay(1000);
   snarf_rotator.move_absolute(0,200);
   snarf_rotator_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	snarf_rotator_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
   pros::delay(400);
-  turn(270, 600);
-   pros::delay(1200);
-    move(30, 600);
+   turn(-115, 400);
    pros::delay(800);
-  turn(-40, 600);
- pros::delay(300);
-  snarf_rotator.move_absolute(-extenddistance, 200);
-  snarf_driver.move_velocity(0);
+    move(8, 600);
+   pros::delay(600);
+  turn(-45, 600);
+   pros::delay(400);
+   snarf_rotator.move_absolute(-extenddistance, 200);
+   snarf_driver.move_velocity(-600);
+  pros::delay(400);
+  move(30,600);
+  pros::delay(700);
+
+  
      left_motors.set_voltage_limit(5000);
   right_motors.set_voltage_limit(5000);
 
-  move(9, 250);
+  move(5, 250);
   front_left_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
 	back_left_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
 	front_right_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
