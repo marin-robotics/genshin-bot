@@ -152,13 +152,13 @@ void autonomous() {
 	snarf_rotator_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   catapult_motor.move_relative(catainit , 127);
   pros::delay(400);
-move(-28, 500);
+move(-28, 600);
 pros::delay(1200);
 turn(45, 600 );
 pros::delay(400);
   left_motors.move_velocity(-600);
   right_motors.move_velocity(-600);
-  pros::delay(500);
+  pros::delay(700);
  left_motors.move_velocity(0);
   right_motors.move_velocity(0);
 //pros::Task body1{ 
@@ -229,7 +229,9 @@ if(autonselect==1) {
 
   move(5, 250);
     }
+    //12.7 seconds 
 else if (autonselect==-1) {
+  move(-6, 600);
     turn(-25, 400);
    pros::delay(1000);
    catapult_motor.move_relative(540, 127);
