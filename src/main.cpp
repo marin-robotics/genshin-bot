@@ -69,7 +69,8 @@ float modifier = 600.0/127;
 float rt2 = sqrt(2.0);
 //defining the controller
 int auton_step = 0; // debug
-int catainit =135;
+int catainit =135; // side one is defensive, side -1 is offensive
+float autonselect=1;
 void debug_auton(int step){
   pros::screen::print(pros::E_TEXT_LARGE_CENTER, 1, "Running Auton");
   pros::screen::print(pros::E_TEXT_MEDIUM, 3, "Step: %d", step);
@@ -89,8 +90,8 @@ void on_center_button() {
 }
 float move_factor= 360/Wheel_Circumference;
 
-// side one is defensive, side -1 is offensive
-float autonselect=1 ;
+
+
 pros::Mutex action;
 // inches, rpm, defaults to forward
 void move( float inches, float velocity) { 	//action.take(1000);
@@ -177,12 +178,12 @@ pros::delay(400);
                               "three");
  pros::delay(700);
  //tweak this turn as needed at tournament
-  turn(110, 600);
+  turn(95, 600);
   pros::delay(600);
   left_motors.move_velocity(200);
   right_motors.move_velocity(200);
-  left_motors.set_voltage_limit(4600);
-  right_motors.set_voltage_limit(4600);
+  left_motors.set_voltage_limit(3000);
+  right_motors.set_voltage_limit(3000);
   pros::delay(600);
   
     left_motors.move_velocity(0);
@@ -200,8 +201,9 @@ pros::delay(400);
    move(-4, 600);
      pros::delay(500);
    pros::delay(1000);
+if(autonselect==1) {
   turn(25, 400);
-   pros::delay(400);
+   pros::delay(1000);
    catapult_motor.move_relative(540, 127);
   pros::delay(1000);
   snarf_rotator.move_absolute(0,200);
@@ -226,6 +228,12 @@ pros::delay(400);
   right_motors.set_voltage_limit(5000);
 
   move(5, 250);
+    }
+else if (autonselect==-1) {
+    turn(-25, 400);
+   pros::delay(1000);
+   catapult_motor.move_relative(540, 127);
+}
   front_left_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
 	back_left_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
 	front_right_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
