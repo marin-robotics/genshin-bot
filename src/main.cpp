@@ -76,7 +76,7 @@ void debug_auton(int step){
   pros::screen::print(pros::E_TEXT_MEDIUM, 3, "Step: %d", step);
 }
 
-float extenddistance = 240;
+float extenddistance = 250;
 bool isextended = false;
 bool snarferon = false;
 void on_center_button() {
