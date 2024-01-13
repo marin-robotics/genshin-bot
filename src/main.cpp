@@ -33,7 +33,7 @@ float Move_Tuning_Factor = 2.2;
 float up_step = 50;
 float down_step = -50;
 float turn_constant = 0.7;
-
+bool autoncheck;
 // Static Variables
   // Main Drive
   int left_x, left_y, right_x, right_y;
@@ -69,7 +69,7 @@ float modifier = 600.0/127;
 float rt2 = sqrt(2.0);
 //defining the controller
 int auton_step = 0; // debug
-int catainit =135; // side one is defensive, side -1 is offensive
+int catainit =120; // side one is defensive, side -1 is offensive
 float autonselect=1;
 void debug_auton(int step){
   pros::screen::print(pros::E_TEXT_LARGE_CENTER, 1, "Running Auton");
@@ -89,7 +89,22 @@ void on_center_button() {
 	} 
 }
 float move_factor= 360/Wheel_Circumference;
+void snarf_turn(){
+            if (isextended == true) {
+              snarf_rotator.move_relative(extenddistance, 127);
+              isextended = false;
+              pros::delay(20);
+            } 
+            else if (isextended == false) {
+              snarf_rotator.move_absolute(-extenddistance, 127);
+              isextended = true;
+              pros::delay(20);
+            }
 
+            else {
+              pros::delay(20);
+            }
+}
 
 
 pros::Mutex action;
@@ -147,15 +162,16 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
+  autoncheck=true;
   catapult_motor.set_brake_modes(MOTOR_BRAKE_HOLD);
   	snarf_rotator_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	snarf_rotator_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  catapult_motor.move_relative(catainit , 127);
-  pros::delay(400);
-move(-28, 600);
-pros::delay(1200);
-turn(45, 600 );
-pros::delay(400);
+ 
+move(-30, 400);
+pros::delay(800);
+turn(50, 600);
+
+pros::delay(500);
   left_motors.move_velocity(-600);
   right_motors.move_velocity(-600);
   pros::delay(700);
@@ -164,27 +180,28 @@ pros::delay(400);
 //pros::Task body1{ 
 //  [=]{
   //  action.take(5000);
-  move(6, 600);
+  move(4, 600);
   pros::screen::print(pros::E_TEXT_MEDIUM, 1,
                               "one");
-  pros::delay(400);
+  pros::delay(500);
   
-  turn(-45,600);
+  turn(-45,500);
   pros::screen::print(pros::E_TEXT_MEDIUM, 1, "two");
  
-  pros::delay(400);
-  move(15, 600);
+  pros::delay(600);
+  //moves to centre of elevation bar
+  move(17, 600);
   pros::screen::print(pros::E_TEXT_MEDIUM, 1,
                               "three");
  pros::delay(700);
- //tweak this turn as needed at tournament
-  turn(95, 600);
-  pros::delay(600);
-  left_motors.move_velocity(200);
-  right_motors.move_velocity(200);
-  left_motors.set_voltage_limit(3000);
-  right_motors.set_voltage_limit(3000);
-  pros::delay(600);
+ //tweak this turn as needed at tournament -aligns with match load bar
+  turn(105, 600);
+  pros::delay(500);
+  left_motors.move_velocity(300);
+  right_motors.move_velocity(300);
+  left_motors.set_voltage_limit(4000);
+  right_motors.set_voltage_limit(4000);
+  pros::delay(900);
   
     left_motors.move_velocity(0);
   right_motors.move_velocity(0);
@@ -192,36 +209,36 @@ pros::delay(400);
   right_motors.set_voltage_limit(12000);
   pros::delay(600);
   pros::screen::print(pros::E_TEXT_MEDIUM, 1, "four");
-  snarf_rotator_right.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-	snarf_rotator_left.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-  snarf_rotator.move_absolute(-extenddistance, 200);
-  pros::delay(400);
-  snarf_driver.move_velocity(600);
+  snarf_turn(); 
+  pros::delay(600);
+  catapult_motor.move_relative(235 , 127);
   pros::delay(500);
-   move(-4, 600);
-     pros::delay(500);
-   pros::delay(1000);
+  snarf_driver.move_velocity(600);
+  pros::delay(700);
+  	snarf_rotator_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	snarf_rotator_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+   move(-6, 600);
+   pros::delay(800);
 if(autonselect==1) {
   turn(25, 400);
-   pros::delay(1000);
-   catapult_motor.move_relative(540, 127);
-  pros::delay(1000);
-  snarf_rotator.move_absolute(0,200);
-  snarf_rotator_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	snarf_rotator_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-
-  pros::delay(400);
-   turn(-115, 400);
-   pros::delay(800);
-    move(8, 600);
+   pros::delay(1200);
+   catapult_motor.move_relative(200, 127);
+  pros::delay(800);
+  //tweak this turn and move at tourney- supposed to get robot into position where the following turn will allow the snarfer to be aligned with the center triball
+   turn(-135, 400);
+      pros::delay(800);
+    snarf_turn();
+   snarf_driver.move_velocity(0);
+   pros::delay(500);
+    move(18, 600);
    pros::delay(600);
-  turn(-45, 600);
-   pros::delay(400);
-   snarf_rotator.move_absolute(-extenddistance, 200);
+  turn(-40, 600);
+   pros::delay(500);
+   snarf_turn();
+   //go forward and touch the bar
    snarf_driver.move_velocity(-600);
-  pros::delay(400);
-  move(30,600);
-  pros::delay(700);
+  move(25,600);
+  pros::delay(600);
 
   
      left_motors.set_voltage_limit(5000);
@@ -246,6 +263,7 @@ else if (autonselect==-1) {
 
 }
 
+
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
       left_motors.set_voltage_limit(12000);
@@ -259,7 +277,9 @@ void opcontrol() {
 	catapult_motor.set_brake_modes(MOTOR_BRAKE_HOLD);
 	snarf_rotator_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	snarf_rotator_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-   snarf_rotator.move_absolute(0, 200);
+ if (autoncheck) {catapult_motor.move_relative(340, 200);
+ pros::delay(500);
+}
      snarf_driver.move_velocity(0);
 	//gets the x and y inputs from both controller sticks
         
@@ -341,20 +361,7 @@ if (drive_plus_turning) { // Option to use the right stick for turning
   }
           // forebar code- if not working reverse input and output
    if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) {
-            if (isextended == true) {
-              snarf_rotator.move_absolute(0, 127);
-              isextended = false;
-              pros::delay(20);
-            } 
-            else if (isextended == false) {
-              snarf_rotator.move_absolute(-extenddistance, 127);
-              isextended = true;
-              pros::delay(20);
-            }
-
-            else {
-              pros::delay(20);
-            }
+      snarf_turn();
           }
           // catapult code
 
