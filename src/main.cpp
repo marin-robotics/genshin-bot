@@ -70,7 +70,7 @@ float rt2 = sqrt(2.0);
 //defining the controller
 int auton_step = 0; // debug
 int catainit =120; // side one is defensive, side -1 is offensive
-float autonselect=1;
+float autonselect=   1;
 void debug_auton(int step){
   pros::screen::print(pros::E_TEXT_LARGE_CENTER, 1, "Running Auton");
   pros::screen::print(pros::E_TEXT_MEDIUM, 3, "Step: %d", step);
@@ -222,6 +222,8 @@ pros::delay(500);
 if(autonselect==1) {
   turn(25, 400);
    pros::delay(1200);
+   catapult_motor.move_relative(-45,127);
+   pros::delay(300);
    catapult_motor.move_relative(200, 127);
   pros::delay(800);
   //tweak this turn and move at tourney- supposed to get robot into position where the following turn will allow the snarfer to be aligned with the center triball
@@ -230,14 +232,14 @@ if(autonselect==1) {
     snarf_turn();
    snarf_driver.move_velocity(0);
    pros::delay(500);
-    move(18, 600);
+    move(23, 600);
    pros::delay(600);
   turn(-40, 600);
    pros::delay(500);
    snarf_turn();
    //go forward and touch the bar
    snarf_driver.move_velocity(-600);
-  move(25,600);
+  move(20,600);
   pros::delay(600);
 
   
@@ -277,7 +279,7 @@ void opcontrol() {
 	catapult_motor.set_brake_modes(MOTOR_BRAKE_HOLD);
 	snarf_rotator_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	snarf_rotator_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
- if (autoncheck) {catapult_motor.move_relative(340, 200);
+ if (autoncheck) {catapult_motor.move_relative(370, 200);
  pros::delay(500);
 }
      snarf_driver.move_velocity(0);
