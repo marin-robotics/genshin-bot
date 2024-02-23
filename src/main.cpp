@@ -1,3 +1,4 @@
+
 #include "main.h"
 #include "display/lv_objx/lv_list.h"
 #include "pros/adi.hpp"
@@ -15,6 +16,8 @@
 //motor initialization
 using pros::E_CONTROLLER_ANALOG_LEFT_Y;
 using pros::E_CONTROLLER_ANALOG_RIGHT_Y;
+using pros::E_CONTROLLER_ANALOG_LEFT_X;
+using pros::E_CONTROLLER_ANALOG_RIGHT_X;
 using namespace std;
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 // Custom Variables
@@ -47,16 +50,16 @@ float y_current, x_current, y_direction, x_direction;
 float y_true_step;
 float x_true_step;
 
-pros::Motor front_left_motor(17, pros::E_MOTOR_GEAR_BLUE, true,
-                             pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor back_left_motor(16, pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor front_right_motor(19, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor back_right_motor(20, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor front_left_motor(16,pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor front_right_motor(20,pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor back_left_motor(17,pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor back_right_motor(19,pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_DEGREES);
+
 pros::Motor catapult_motor_left(1, pros::E_MOTOR_GEAR_RED, false, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor catapult_motor_right(8, pros::E_MOTOR_GEAR_RED, true, pros::E_MOTOR_ENCODER_DEGREES);
-pros::Motor snarf_rotator_right( 2,pros::E_MOTOR_GEAR_GREEN, false, pros:: E_MOTOR_ENCODER_DEGREES );
-pros::Motor snarf_rotator_left( 6,pros::E_MOTOR_GEAR_GREEN, true, pros:: E_MOTOR_ENCODER_DEGREES );
-pros::Motor snarf_driver(4, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor catapult_motor_right(2, pros::E_MOTOR_GEAR_RED, true, pros::E_MOTOR_ENCODER_DEGREES);
+pros::Motor snarf_rotator_right( 4,pros::E_MOTOR_GEAR_GREEN, false, pros:: E_MOTOR_ENCODER_DEGREES );
+pros::Motor snarf_rotator_left( 19,pros::E_MOTOR_GEAR_GREEN, true, pros:: E_MOTOR_ENCODER_DEGREES );
+pros::Motor snarf_driver(11, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_DEGREES);
 //grouping both sides of the drivetrain
 pros::MotorGroup left_motors({front_left_motor, back_left_motor});
 pros::MotorGroup right_motors({front_right_motor, back_right_motor});
@@ -285,6 +288,7 @@ void opcontrol() {
      snarf_driver.move_velocity(0);
 	//gets the x and y inputs from both controller sticks
         
+      
         while (true) {
 		    float left_y = (master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y));
         float right_y = (master.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y));
@@ -298,6 +302,17 @@ void opcontrol() {
 if (drive_plus_turning) { // Option to use the right stick for turning
       if (abs(right_x) < abs(left_x)) {
         right_x = left_x;
+      }
+    }
+    if (drive_plus_forward) { // Option to use the right stick for forward
+      if (abs(right_y) < abs(left_y)) {
+        right_y = left_y;
+      }
+    }
+
+      if (drive_plus_turning) { // Option to use the right stick for turning
+      if (abs(right_y) < abs(left_y)) {
+        right_y = left_y;
       }
     }
     if (drive_plus_forward) { // Option to use the right stick for forward
@@ -339,15 +354,13 @@ if (drive_plus_turning) { // Option to use the right stick for turning
 
     if (standard_drive) {
       left_motors.move((y_current * y_direction) + (turn_constant * x_current * x_direction));
-      right_motors.move((y_current * y_direction) - (turn_constant * x_current * x_direction));
+      right_motors.move(((y_current * y_direction) - (turn_constant * x_current * x_direction))/1.005);
     } else {
       left_motors.move((y_current * y_direction) - (turn_constant * x_current * x_direction));
-      right_motors.move((y_current * y_direction) + (turn_constant * x_current * x_direction));
+      right_motors.move(((y_current * y_direction) + (turn_constant * x_current * x_direction))/1.005);
     }
 
     pros::delay(20);
-  
-         
           
           
           // snarfer code
