@@ -54,7 +54,7 @@ pros::Motor front_left_motor(16,pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_EN
 pros::Motor front_right_motor(20,pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_DEGREES);
 pros::Motor back_left_motor(17,pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_DEGREES);
 pros::Motor back_right_motor(19,pros::E_MOTOR_GEAR_BLUE, true, pros::E_MOTOR_ENCODER_DEGREES);
-
+pros::Motor left_wing(14, pros::E_MOTOR_GEAR_GREEN,false,pros::E_MOTOR_ENCODER_DEGREES);
 pros::Motor catapult_motor_left(1, pros::E_MOTOR_GEAR_RED, false, pros::E_MOTOR_ENCODER_DEGREES);
 pros::Motor catapult_motor_right(2, pros::E_MOTOR_GEAR_RED, true, pros::E_MOTOR_ENCODER_DEGREES);
 pros::Motor snarf_rotator_right( 4,pros::E_MOTOR_GEAR_GREEN, false, pros:: E_MOTOR_ENCODER_DEGREES );
@@ -63,6 +63,8 @@ pros::Motor snarf_driver(11, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCOD
 //grouping both sides of the drivetrain
 pros::MotorGroup left_motors({front_left_motor, back_left_motor});
 pros::MotorGroup right_motors({front_right_motor, back_right_motor});
+pros::MotorGroup front_motors({front_left_motor,front_right_motor});
+pros::MotorGroup back_motors({back_left_motor,back_right_motor});
 pros::MotorGroup snarf_rotator({snarf_rotator_right, snarf_rotator_left});
 pros::MotorGroup catapult_motor({catapult_motor_left, catapult_motor_right});
 int repeat=0;
@@ -72,7 +74,8 @@ float modifier = 600.0/127;
 float rt2 = sqrt(2.0);
 //defining the controller
 int auton_step = 0; // debug
-int catainit =120; // side one is defensive, side -1 is offensive
+int catainit =70;
+ // side one is defensive, side -1 is offensive
 float autonselect=   1;
 void debug_auton(int step){
   pros::screen::print(pros::E_TEXT_LARGE_CENTER, 1, "Running Auton");
@@ -80,7 +83,9 @@ void debug_auton(int step){
 }
 
 float extenddistance = 250;
+float wingextend = -90;
 bool isextended = false;
+bool wingextended = false;
 bool snarferon = false;
 void on_center_button() {
 	static bool pressed = false;
@@ -92,15 +97,15 @@ void on_center_button() {
 	} 
 }
 float move_factor= 360/Wheel_Circumference;
-void snarf_turn(){
-            if (isextended == true) {
-              snarf_rotator.move_relative(extenddistance, 127);
-              isextended = false;
+void wing_turn(){
+            if (wingextended == true) {
+              left_wing.move_relative(wingextend, 127);
+              wingextended = false;
               pros::delay(20);
             } 
-            else if (isextended == false) {
-              snarf_rotator.move_absolute(-extenddistance, 127);
-              isextended = true;
+            else if (wingextended == false) {
+              left_wing.move_relative(-wingextend, 127);
+              wingextended = true;
               pros::delay(20);
             }
 
@@ -110,7 +115,7 @@ void snarf_turn(){
 }
 
 
-pros::Mutex action;
+ 
 // inches, rpm, defaults to forward
 void move( float inches, float velocity) { 	//action.take(1000);
 	Forward_Wheel_Rotation = Move_Tuning_Factor*(inches/Wheel_Circumference)*360;
@@ -118,8 +123,8 @@ void move( float inches, float velocity) { 	//action.take(1000);
   left_motors.tare_position();
   right_motors.tare_position();
 
-  left_motors.move_relative(Forward_Wheel_Rotation,velocity);
-  right_motors.move_relative(Forward_Wheel_Rotation,velocity);
+  front_motors.move_relative(Forward_Wheel_Rotation,velocity);
+  back_motors.move_relative(-Forward_Wheel_Rotation,velocity);
 		//action.give();
 	}
   // inputs in degrees, rpm, defaults to clockwise
@@ -128,8 +133,10 @@ void turn (float angle, float velocity) {
 	 Turning_Distance = angle/360 * Turning_Circumference;
   Wheel_Revolutions = Turning_Distance/Wheel_Circumference;
   Turn_Wheel_Rotation = Turn_Tuning_Factor*Wheel_Revolutions*360; // Degrees that the wheel should turn
-  left_motors.move_relative(Turn_Wheel_Rotation*autonselect, velocity);
-  right_motors.move_relative(-Turn_Wheel_Rotation*autonselect, velocity);
+  front_left_motor.move_relative(Turn_Wheel_Rotation*autonselect, velocity);
+  back_left_motor.move_relative(-Turn_Wheel_Rotation*autonselect, velocity);
+  front_right_motor.move_relative(-Turn_Wheel_Rotation*autonselect, velocity);
+  back_right_motor.move_relative(Turn_Wheel_Rotation*autonselect, velocity);
 
 }
 void timedmove (float inches, float velocity, float milliseconds) {
@@ -167,61 +174,81 @@ void competition_initialize() {}
 void autonomous() {
   autoncheck=true;
   catapult_motor.set_brake_modes(MOTOR_BRAKE_HOLD);
-  	snarf_rotator_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	snarf_rotator_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
- 
-move(-30, 400);
-pros::delay(800);
-turn(50, 600);
+  snarf_driver.set_brake_mode(MOTOR_BRAKE_HOLD);
+  left_wing.set_brake_mode(MOTOR_BRAKE_HOLD);
+ snarf_driver.move_velocity(-5);
+ catapult_motor.move_relative(catainit, 200);
 
-pros::delay(500);
-  left_motors.move_velocity(-600);
-  right_motors.move_velocity(-600);
-  pros::delay(700);
- left_motors.move_velocity(0);
-  right_motors.move_velocity(0);
-//pros::Task body1{ 
-//  [=]{
-  //  action.take(5000);
-  move(4, 600);
-  pros::screen::print(pros::E_TEXT_MEDIUM, 1,
-                              "one");
-  pros::delay(500);
+  move(15, 100);
+  pros::delay(800);
+  move(-3, 70);
+  pros::delay(300);
+  move(18, 70);
+  pros::delay(800);
+  turn(-45, 80);
   
-  turn(-45,500);
-  pros::screen::print(pros::E_TEXT_MEDIUM, 1, "two");
- 
-  pros::delay(600);
-  //moves to centre of elevation bar
-  move(17, 600);
-  pros::screen::print(pros::E_TEXT_MEDIUM, 1,
-                              "three");
- pros::delay(700);
- //tweak this turn as needed at tournament -aligns with match load bar
-  turn(105, 600);
+  snarf_driver.move_velocity(-200);
+  snarf_driver.move_velocity(-200);
+  snarf_driver.move_velocity(-200);
+  pros::delay(150);
+  snarf_driver.move_velocity(-200);
+  move(40, 200);
+  snarf_driver.move_velocity(-200);
+  snarf_driver.move_velocity(-200);
+  pros::delay(1000);
+  move(-10, 200);
   pros::delay(500);
-  left_motors.move_velocity(300);
-  right_motors.move_velocity(300);
-  left_motors.set_voltage_limit(4000);
-  right_motors.set_voltage_limit(4000);
+  move( 12, 200);
+  pros::delay(700);
+  move(-14, 100);
+  snarf_driver.brake();
+  pros::delay(900);
+  turn(-66, 50);
+  pros::delay(100);
+
+  move(57, 200);
+  pros::delay(1100);
+  snarf_driver.move_velocity(200);
+  pros::delay(700);
+  snarf_driver.brake();
+  turn(140, 70);
+  pros::delay(350);
+  snarf_driver.move_velocity(-600);
+  snarf_driver.move_velocity(-600);
+  snarf_driver.move_velocity(-600);
+  
+  snarf_driver.move_velocity(-600);
+  move(10, 100);
+  snarf_driver.move_velocity(-600);
+  pros::delay(800);
+  move(-8, 100);
+  snarf_driver.move_velocity(-600);
+  pros::delay(600);
+  snarf_driver.brake();
+  turn(-95, 50);
+  pros::delay(100);
+  snarf_driver.move_velocity(600);
+  snarf_driver.move_velocity(600);
+  snarf_driver.move_velocity(600);
+  pros::delay(50);
+  snarf_driver.move_velocity(600);
+  snarf_driver.move_velocity(600);
+  move(23, 150);
+  snarf_driver.move_velocity(600);
+  snarf_driver.move_velocity(600);
+  pros::delay(900);
+  turn(115, 70);
+  pros::delay(200);
+  snarf_driver.brake();
+  pros::delay(100);
+  snarf_driver.move_velocity(-600);
+ 
+  move(50, 200);
+  pros::delay(900);
+
   pros::delay(900);
   
-    left_motors.move_velocity(0);
-  right_motors.move_velocity(0);
-    left_motors.set_voltage_limit(12000);
-  right_motors.set_voltage_limit(12000);
-  pros::delay(600);
-  pros::screen::print(pros::E_TEXT_MEDIUM, 1, "four");
-  snarf_turn(); 
-  pros::delay(600);
-  catapult_motor.move_relative(235 , 127);
-  pros::delay(500);
-  snarf_driver.move_velocity(600);
-  pros::delay(700);
-  	snarf_rotator_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	snarf_rotator_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-   move(-6, 600);
-   pros::delay(800);
+/*
 if(autonselect==1) {
   turn(25, 400);
    pros::delay(1200);
@@ -257,7 +284,7 @@ else if (autonselect==-1) {
     turn(-25, 400);
    pros::delay(1000);
    catapult_motor.move_relative(540, 127);
-}
+} */
   front_left_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
 	back_left_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
 	front_right_motor.set_brake_mode(MOTOR_BRAKE_HOLD);
@@ -282,9 +309,8 @@ void opcontrol() {
 	catapult_motor.set_brake_modes(MOTOR_BRAKE_HOLD);
 	snarf_rotator_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	snarf_rotator_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
- if (autoncheck) {catapult_motor.move_relative(370, 200);
- pros::delay(500);
-}
+
+
      snarf_driver.move_velocity(0);
 	//gets the x and y inputs from both controller sticks
         
@@ -376,12 +402,12 @@ if (drive_plus_turning) { // Option to use the right stick for turning
   }
           // forebar code- if not working reverse input and output
    if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) {
-      snarf_turn();
+      wing_turn();
           }
           // catapult code
 
 if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
-   catapult_motor.move_relative(540, 127); //pos was 540
+   catapult_motor.move_relative(270, 127); //pos was 540
   }
           pros::delay(20);	
 if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)){
@@ -392,8 +418,14 @@ if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)){
 if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
 			piston.set_value(true);
 		}
+if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
+			piston.set_value(true);
+		}
 if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)){
-   catapult_motor.move_relative(catainit , 127);
+   catapult_motor.move_relative(15 , 127);
+}
+if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)){
+   catapult_motor.move_relative(-15, 127);
 }
   if (master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
     snarf_rotator.move_absolute(0, 200);
